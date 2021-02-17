@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>advancedNavigation</name>
+	<displayName><![CDATA[Advanced Navigation]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[This module remove id as required in urls, and add encoded id as optional key.
+		There is detection for duplicated urls based on url template thad you created.
+	]]></description>
+	<author><![CDATA[Faktiva]]></author>
+	<tab><![CDATA[seo]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall &quot;Advanced Navigation&quot; module?]]></confirmUninstall>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+	<limited_countries></limited_countries>
+</module>
