@@ -10,11 +10,11 @@ class Dispatcher extends DispatcherCore
                 'rule' => '{rewrite}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_category'),
-                    'categories' => array('regexp' => '[/_a-zA-Z0-9\pL\pS-]*'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'category_rewrite'),
+                    'categories' => array('regexp' => '[/_a-zA-Z0-9\pL\pS-]*', 'param' => 'categories'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'category_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
-                    'encode_id' => array('regexp' => '[_a-zA-Z0-9\pL-]*', 'param' => 'encode_id'),
+                    'encode_id' => array('regexp' => '[-A-Za-z0-9+/]*={0,3}', 'param' => 'encode_id'),
                 ),
             ),
             'supplier_rule' => array(
@@ -22,7 +22,7 @@ class Dispatcher extends DispatcherCore
                 'rule' => 'supplier/{rewrite}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_supplier'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'supplier_rewrite'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'supplier_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                 ),
@@ -32,7 +32,7 @@ class Dispatcher extends DispatcherCore
                 'rule' => 'manufacturer/{rewrite}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_manufacturer'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'manufacturer_rewrite'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'manufacturer_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                 ),
@@ -42,7 +42,7 @@ class Dispatcher extends DispatcherCore
                 'rule' => 'info/{rewrite}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_cms'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'cms_rewrite'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'cms_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                 ),
@@ -52,7 +52,7 @@ class Dispatcher extends DispatcherCore
                 'rule' => 'info/{rewrite}/',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_cms_category'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'cms_category_rewrite'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'cms_category_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                 ),
@@ -61,8 +61,8 @@ class Dispatcher extends DispatcherCore
                 'controller' => null,
                 'rule' => 'module/{module}/{controller}',
                 'keywords' => array(
-                    'module' => array('regexp' => '[_a-zA-Z0-9-]+', 'param' => 'module'),
-                    'controller' => array('regexp' => '[_a-zA-Z0-9-]+', 'param' => 'controller'),
+                    'module' => array('regexp' => '[_a-zA-Z0-9-]+', 'param' => 'module', 'require' => true),
+                    'controller' => array('regexp' => '[_a-zA-Z0-9-]+', 'param' => 'controller', 'require' => true),
                 ),
                 'params' => array(
                     'fc' => 'module',
@@ -73,7 +73,7 @@ class Dispatcher extends DispatcherCore
                 'rule' => '{category:/}{rewrite}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_product'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'product_rewrite', 'required'),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*', 'param' => 'product_rewrite', 'require' => true),
                     'ean13' => array('regexp' => '[0-9]{8,17}'),
                     'category' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'categories' => array('regexp' => '[/_a-zA-Z0-9\pL-]*'),
@@ -92,8 +92,8 @@ class Dispatcher extends DispatcherCore
                 'rule' => '{rewrite}/f/{selected_filters}',
                 'keywords' => array(
                     'id' => array('regexp' => '[0-9]+','param' => 'id_category'),
-                    'selected_filters' => array('regexp' => '.*', 'param' => 'selected_filters'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL-]*', 'param' => 'category_rewrite'),
+                    'selected_filters' => array('regexp' => '.*', 'param' => 'selected_filters', 'require' => true),
+                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL-]*', 'param' => 'category_rewrite', 'require' => true),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9\pL-]*'),
                 ),
@@ -397,6 +397,12 @@ class Dispatcher extends DispatcherCore
         preg_match($regexp, $short_link, $kw);
         if (!empty($kw['id_category'])) {
             $id_category = $kw['id_category'];
+            $_GET['id_category'] = $id_category;
+            return true;
+        }
+
+        if (!empty($kw['encode_id'])) {
+            $id_category = base64_decode($kw['encode_id']);
             $_GET['id_category'] = $id_category;
             return true;
         }

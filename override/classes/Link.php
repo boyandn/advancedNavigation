@@ -21,6 +21,7 @@ class Link extends LinkCore
             $idLang = Context::getContext()->language->id;
         }
         $url = $this->getBaseLink($idShop, null, $relativeProtocol) . $this->getLangLink($idLang, null, $idShop);
+
         $params = [];
         if (!is_object($product)) {
             if (is_array($product) && isset($product['id_product'])) {
@@ -87,6 +88,8 @@ class Link extends LinkCore
 
     public function getCategoryLink($category, $alias = null, $id_lang = null, $selected_filters = null, $id_shop = null, $relative_protocol = false)
     {
+        $dispatcher = Dispatcher::getInstance();
+
         if (!$id_lang) {
             $id_lang = Context::getContext()->language->id;
         }
@@ -99,6 +102,10 @@ class Link extends LinkCore
         $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
         $params['meta_keywords'] = Tools::str2url($category->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
+        if ($dispatcher->hasKeyword('category_rule', $id_lang, 'encode_id', $id_shop)) {
+            $params['encode_id'] = base64_encode($category->id);
+        }
+
         $selected_filters = is_null($selected_filters) ? '' : $selected_filters;
         if (empty($selected_filters)) {
             $rule = 'category_rule';
