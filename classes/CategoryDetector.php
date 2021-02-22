@@ -62,9 +62,9 @@ class CategoryDetector
             SELECT 
                 group_concat(cl.id_category) as ids
             FROM " . _DB_PREFIX_ . "category_lang cl 
-            JOIN " . _DB_PREFIX_ . "category c ON c.id_category=cl.id_category and cl.id_lang=".$langId."
+            JOIN " . _DB_PREFIX_ . "category c ON c.id_category=cl.id_category and cl.id_lang=".$langId." and cl.id_shop = " . $this->shopId . "
             JOIN " . _DB_PREFIX_ . "category cp ON c.id_parent=cp.id_category
-            JOIN " . _DB_PREFIX_ . "category_lang cpl ON cpl.id_category=cp.id_category and cpl.id_lang=".$langId."
+            JOIN " . _DB_PREFIX_ . "category_lang cpl ON cpl.id_category=cp.id_category and cpl.id_lang=".$langId." and cpl.id_shop = " . $this->shopId . "
             GROUP BY ".implode(',', $dbColumns)."
             HAVING count(cl.id_category) > 1
        ";

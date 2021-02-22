@@ -111,7 +111,7 @@ class Dispatcher extends DispatcherCore
         }
 
         foreach ($this->default_routes[$route_id]['keywords'] as $keyword => $data) {
-            if (isset($data['required']) && !preg_match('#\{([^{}]*:)?' . $keyword . '(:[^{}]*)?\}#', $rule)) {
+            if (isset($data['require']) && !preg_match('#\{([^{}]*:)?' . $keyword . '(:[^{}]*)?\}#', $rule)) {
                 $errors[] = $keyword;
             }
         }
@@ -345,24 +345,15 @@ class Dispatcher extends DispatcherCore
     {
         $short_link = preg_replace('#\.html?$#', '', '/'.$short_link);
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
-
         preg_match($regexp, $short_link, $kw);
-
         $id_product = 0;
-
+        $id_lang_product=0;
         if (!empty($kw['id_product'])) {
             $id_product = $kw['id_product'];
-            $_GET['id_product'] = $id_product;
-            return true;
         }
-
         if (!empty($kw['encoded_id_product'])) {
             $id_product = base64_decode($kw['encoded_id_product']);
-            $_GET['id_product'] = $id_product;
-            return true;
         }
-
-
         if (!empty($kw['product_rewrite'])) {
             $lang_id = (int) Context::getContext()->language->id;
             $sql = 'SELECT `pl`.`id_product` 
@@ -375,19 +366,24 @@ class Dispatcher extends DispatcherCore
             if (!empty($kw['reference'])) {
                 $sql .= ' AND `p`.`reference` = \'' . $kw['reference'] . '\'';
             }
-
             if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
                 $sql .= ' AND `id_shop` = '.(int) Shop::getContextShopID();
             }
-
-            $id_product = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-
-            if ($id_product > 0) {
-                $_GET['id_product'] = $id_product;
-            }
+            $id_lang_product = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
         }
 
-        return $id_product > 0;
+        if ($id_product !== 0 && $id_lang_product === $id_product)
+        {
+            $_GET['id_product'] = $id_product;
+            return true;
+        } else {
+            if($id_lang_product > 0) {
+                $_GET['id_product'] = $id_lang_product;
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     private static function isCategoryLink($short_link, $route)
@@ -395,22 +391,19 @@ class Dispatcher extends DispatcherCore
         $short_link = preg_replace('#\.html?$#', '', '/'.$short_link);
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
+
+        $id_lang_cat = 0;
+        $id_category = 0;
+
         if (!empty($kw['id_category'])) {
             $id_category = $kw['id_category'];
-            $_GET['id_category'] = $id_category;
-            return true;
         }
-
         if (!empty($kw['encode_id'])) {
             $id_category = base64_decode($kw['encode_id']);
-            $_GET['id_category'] = $id_category;
-            return true;
         }
-
         if (empty($kw['category_rewrite'])) {
             return false;
         }
-
         if (empty($kw['categories'])) {
             $sql = 'SELECT `id_category`
             FROM `' . _DB_PREFIX_ . 'category_lang` cl
@@ -428,17 +421,23 @@ class Dispatcher extends DispatcherCore
                 and clp.`link_rewrite` = '" . pSQL(end($parent)) . "'
                 AND `cl`.`id_lang` = " . (int)Context::getContext()->language->id;
         }
-
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND `cl`.`id_shop` = '.(int) Shop::getContextShopID();
         }
+        $id_lang_cat = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-
-        $id_category = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-        if ($id_category > 0){
+        if ($id_category !== 0 && $id_lang_cat === $id_category)
+        {
             $_GET['id_category'] = $id_category;
+            return true;
+        } else {
+            if($id_lang_cat > 0) {
+                $_GET['id_category'] = $id_lang_cat;
+                return true;
+            }
+            return false;
         }
-        return $id_category > 0;
+        return false;
     }
 
     private static function isCmsLink($short_link, $route)

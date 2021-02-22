@@ -22,7 +22,9 @@ class advancedNavigation extends Module
         parent::__construct();
 
         $this->displayName = $this->l('Advanced Navigation');
-        $this->description = $this->l('This module allows you to remove ID\'s from URLs. It add possibility use encoded id\'s if needed.');
+        $this->description = $this->l('This module allows you to remove ID\'s from URLs. 
+            It add possibility use encoded id\'s if needed. 
+            It will report if detect duplicated urls for categories and products');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall "Advanced Navigation Module" module?');
     }

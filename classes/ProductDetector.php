@@ -6,7 +6,7 @@ class ProductDetector
     const DB_TABLE_PRODUCT_LANG = "`" . _DB_PREFIX_ . "product_lang`";
 
     protected $map = [
-        'id' => 'pl.id_product',
+        'id_product' => 'pl.id_product',
         'product_rewrite' => 'pl.link_rewrite',
         'reference' => 'p.reference',
         'encoded_id_product' => 'pl.id_product',
@@ -63,7 +63,7 @@ class ProductDetector
                    group_concat(pl.id_product) as ids  
             FROM '. _DB_PREFIX_ . 'product_lang as pl
             JOIN '. _DB_PREFIX_ . 'product as p 
-                on pl.id_product = p.id_product and pl.id_lang = '.$langId.'
+                on pl.id_product = p.id_product and pl.id_lang = '.$langId.' and  pl.id_shop = '.$this->shopId.'
             GROUP BY '. implode(',', $dbColumns).'
             HAVING count(pl.id_product) > 1';
 

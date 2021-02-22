@@ -1,5 +1,5 @@
 <div class="panel">
-    <h2>{l s='Duplicated Urls'}</h2>
+    <h2>{l s='Advanced Navigation - Duplicated url`s detector'}</h2>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item active">
             <a class="nav-link active" id="category-tab" data-toggle="tab" href="#category" role="tab" aria-controls="category" aria-selected="true">

@@ -3,7 +3,7 @@
         {$productMsg}
         <br>
         <div style="float: auto">
-            <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminMeta', true, array('route' => 'admin_metas_index'))}'>
+            <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminMeta', true, ['route' => 'admin_metas_index'], [])}'>
                 {l s='Traffic & SEO' mod='advancedNavigation'}
             </a>
         </div>
@@ -53,7 +53,7 @@
                             <td>{$product['product']->link_rewrite[$product['lang']['id_lang']]}</td>
                             <td>{$product['lang']['name']}</td>
                             <td style="text-align: center; vertical-align: middle;">
-                                <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('ProductController', true, array('route' => 'admin_product_form', 'id'=> $product['product']->id, 'id_product'=> $product['product']->id))}#tab-step5'>EDIT</a>
+                                <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminProducts', true, ['route' => 'admin_product_form', 'id'=> $product['product']->id, 'id_product'=> $product['product']->id])}#tab-step5'>EDIT</a>
                             </td>
                         </tr>
                     {/foreach}
@@ -62,9 +62,9 @@
             </tr>
         </table>
         <div style='height: 30px; background: grey'></div>
-        {foreachelse}
-        <h1>{l s='No duplicated items were found in the search' mod='advancedNavigation'}</h1>
         {/foreach}
     </div>
+{foreachelse}
+    <h1>{l s='No duplicated items were found in the search' mod='advancedNavigation'}</h1>
 {/foreach}
 </div>

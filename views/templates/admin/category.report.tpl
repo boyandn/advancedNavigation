@@ -3,7 +3,7 @@
     {$catrgoryMsg}
     <br>
     <div style="float: auto">
-        <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminMeta', true, array('route' => 'admin_metas_index'))}'>
+        <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminMeta', true, ['route' => 'admin_metas_index'], [])}'>
             {l s='Traffic & SEO' mod='advancedNavigation'}
         </a>
     </div>
@@ -55,7 +55,7 @@
                         <td>{$cat['category']->link_rewrite[$cat['lang']['id_lang']]}</td>
                         <td>{$cat['lang']['name']}</td>
                         <td style="text-align: center; vertical-align: middle;">
-                            <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminCategories', true, ['route' => 'admin_categories_edit', 'categoryId'=> $cat['category']->id_category], ['id_category' => $cat['category']->id_category, 'updatecategory'=>'' ])}'>
+                       <a class="btn btn-primary" target='_blank' href='{$link->getAdminLink('AdminCategories', true, ['route' => 'admin_categories_edit', 'categoryId'=> $cat['category']->id_category], ['id_category' => $cat['category']->id_category, 'updatecategory'=>'' ])}'>
                                 {l s='edit'}
                             </a>
                         </td>
