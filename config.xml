@@ -3,7 +3,9 @@
     <name>advancedNavigation</name>
     <displayName><![CDATA[Advanced Navigation]]></displayName>
     <version><![CDATA[1.0.0]]></version>
-    <description><![CDATA[This override-module allows you to remove URL ID&#039;s.]]></description>
+    <description><![CDATA[This module allows you to remove ID&#039;s from URLs. 
+            It add possibility use encoded id&#039;s if needed. 
+            It will report if detect duplicated urls for categories and products]]></description>
     <author><![CDATA[Boyan Naydenov]]></author>
     <tab><![CDATA[seo]]></tab>
 	<confirmUninstall><![CDATA[Are you sure you want to uninstall &quot;Advanced Navigation Module&quot; module?]]></confirmUninstall>

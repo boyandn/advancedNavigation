@@ -41,12 +41,11 @@ class advancedNavigation extends Module
         $categoryKeywords = (new CategoryDetector())->getUsedKeywords($this->context->language->id);
 
 
-
-        if (in_array('id_category',$categoryKeywords)) {
-            $categoryMsg .= $this->l("You can change {id} with {encode_id} for better security")."<br>";
-        }
-
         if (!empty($categoryCheck)) {
+
+            if (in_array('id_category',$categoryKeywords)) {
+                $categoryMsg .= $this->l("You can change {id} with {encode_id} for better security")."<br>";
+            }
 
             if(count($categoryKeywords) === 1) {
                 $categoryMsg .= $this->l("Try to use additional keyword for the url schema, to prevent duplications, 
@@ -77,10 +76,10 @@ class advancedNavigation extends Module
 
         $productKeywords = (new ProductDetector())->getUsedKeywords($this->context->language->id);
 
-        if (in_array('id_product',$productKeywords)) {
-            $productMsg .= $this->l("You can change {id} with {encode_id} for better security")."<br>";
-        }
         if ($res = $this->checkProducts()) {
+            if (in_array('id_product',$productKeywords)) {
+                $productMsg .= $this->l("You can change {id} with {encode_id} for better security")."<br>";
+            }
             if(count($productKeywords) === 1) {
                 $productMsg .= $this->l("Try to use additional keyword for the url schema, to prevent duplications, 
                         or edit product to change Friendly URL parameter")."<br>";

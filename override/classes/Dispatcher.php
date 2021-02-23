@@ -347,13 +347,13 @@ class Dispatcher extends DispatcherCore
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
         $id_product = 0;
-        $id_lang_product=0;
         if (!empty($kw['id_product'])) {
             $id_product = $kw['id_product'];
         }
         if (!empty($kw['encoded_id_product'])) {
             $id_product = base64_decode($kw['encoded_id_product']);
         }
+
         if (!empty($kw['product_rewrite'])) {
             $lang_id = (int) Context::getContext()->language->id;
             $sql = 'SELECT `pl`.`id_product` 
@@ -363,26 +363,26 @@ class Dispatcher extends DispatcherCore
             }
             $sql .= ' WHERE `pl`.`link_rewrite` = \'' . pSQL(str_replace('.html', '', $kw['product_rewrite'])) . '\' 
             AND `pl`.`id_lang` = ' . $lang_id;
+
             if (!empty($kw['reference'])) {
                 $sql .= ' AND `p`.`reference` = \'' . $kw['reference'] . '\'';
             }
+
+            if ($id_product !== 0) {
+                $sql .= ' AND `pl`.`id_product` = ' . $id_product;
+            }
+
             if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
                 $sql .= ' AND `id_shop` = '.(int) Shop::getContextShopID();
             }
-            $id_lang_product = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-        }
+            $id = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        if ($id_product !== 0 && $id_lang_product === $id_product)
-        {
-            $_GET['id_product'] = $id_product;
-            return true;
-        } else {
-            if($id_lang_product > 0) {
-                $_GET['id_product'] = $id_lang_product;
+            if ( $id > 0) {
+                $_GET['id_product'] = $id;
                 return true;
             }
-            return false;
         }
+
         return false;
     }
 
@@ -391,10 +391,8 @@ class Dispatcher extends DispatcherCore
         $short_link = preg_replace('#\.html?$#', '', '/'.$short_link);
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
-
         $id_lang_cat = 0;
         $id_category = 0;
-
         if (!empty($kw['id_category'])) {
             $id_category = $kw['id_category'];
         }
@@ -421,22 +419,21 @@ class Dispatcher extends DispatcherCore
                 and clp.`link_rewrite` = '" . pSQL(end($parent)) . "'
                 AND `cl`.`id_lang` = " . (int)Context::getContext()->language->id;
         }
+
+        if ($id_category !== 0) {
+            $sql .= ' AND `cl`.`id_category` = ' . $id_category;
+        }
+
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND `cl`.`id_shop` = '.(int) Shop::getContextShopID();
         }
-        $id_lang_cat = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-
-        if ($id_category !== 0 && $id_lang_cat === $id_category)
+        $id_category = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        if ($id_category !== 0 )
         {
             $_GET['id_category'] = $id_category;
             return true;
-        } else {
-            if($id_lang_cat > 0) {
-                $_GET['id_category'] = $id_lang_cat;
-                return true;
-            }
-            return false;
         }
+
         return false;
     }
 
@@ -445,11 +442,9 @@ class Dispatcher extends DispatcherCore
         $short_link = preg_replace('#\.html?$#', '', '/'.$short_link);
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
-
+        $id_cms = 0;
         if (!empty($kw['id_cms'])) {
             $id_cms = $kw['id_cms'];
-            $_GET['id_cms'] = $id_cms;
-            return true;
         }
 
         if (empty($kw['cms_rewrite'])) {
@@ -459,16 +454,21 @@ class Dispatcher extends DispatcherCore
             FROM `'._DB_PREFIX_.'cms_lang` l
             LEFT JOIN `'._DB_PREFIX_.'cms_shop` s ON (l.`id_cms` = s.`id_cms`)
             WHERE l.`link_rewrite` = \''.pSQL($kw['cms_rewrite']).'\'';
+
+        if ($id_cms !== 0) {
+            $sql .= ' AND `l`.`$id_cms` = ' . $id_cms;
+        }
+
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND s.`id_shop` = '.(int) Shop::getContextShopID();
         }
         $id_cms = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        if ($id_cms > 0){
+        if ($id_cms !== 0){
             $_GET['id_cms'] = $id_cms;
+            return true;
         }
-
-        return $id_cms > 0;
+        return false;
     }
 
     private static function isCmsCategoryLink($short_link, $route)
@@ -477,33 +477,35 @@ class Dispatcher extends DispatcherCore
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
 
+        $id_cms_cat = 0;
         if (!empty($kw['id_cms_cat'])) {
             $id_cms_cat = $kw['id_cms_cat'];
-            $_GET['id_cms_cat'] = $id_cms_cat;
-            return true;
         }
-
         if (empty($kw['cms_category_rewrite'])) {
             if (0 === strpos('/'.$route['rule'], $short_link)) {
                 return true;
             }
             return false;
         }
-
         $sql = 'SELECT l.`id_cms_category`
             FROM `'._DB_PREFIX_.'cms_category_lang` l
             LEFT JOIN `'._DB_PREFIX_.'cms_category_shop` s ON (l.`id_cms_category` = s.`id_cms_category`)
             WHERE l.`link_rewrite` = \''.$kw['cms_category_rewrite'].'\'';
+
+        if ($id_cms_cat !== 0) {
+            $sql .= ' AND `l`.`id_cms_category` = ' . $id_cms_cat;
+        }
+
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND s.`id_shop` = '.(int) Shop::getContextShopID();
         }
         $id_cms_cat = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        if ($id_cms_cat > 0){
+        if ($id_cms_cat !== 0){
             $_GET['id_cms_cat'] = $id_cms_cat;
+            return true;
         }
-
-        return $id_cms_cat > 0;
+        return false;
     }
 
     private static function isManufacturerLink($short_link, $route)
@@ -512,12 +514,10 @@ class Dispatcher extends DispatcherCore
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
 
+        $id_manufacturer=0;
         if (!empty($kw['id_manufacturer'])) {
             $id_manufacturer = $kw['id_manufacturer'];
-            $_GET['id_manufacturer'] = $id_manufacturer;
-            return true;
         }
-
         if (empty($kw['manufacturer_rewrite'])) {
             if (0 === strpos('/'.$route['rule'], $short_link)) {
                 return true;
@@ -529,16 +529,21 @@ class Dispatcher extends DispatcherCore
             FROM `'._DB_PREFIX_.'manufacturer` m
             LEFT JOIN `'._DB_PREFIX_.'manufacturer_shop` s ON (m.`id_manufacturer` = s.`id_manufacturer`)
             WHERE LOWER(m.`name`) LIKE \''.pSQL($manufacturer).'\'';
+
+        if ($id_manufacturer !== 0) {
+            $sql .= ' AND `m`.`id_manufacturer` = ' . $id_manufacturer;
+        }
+
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND s.`id_shop` = '.(int) Shop::getContextShopID();
         }
         $id_manufacturer = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
-        if ($id_manufacturer > 0){
+        if ($id_manufacturer !== 0){
             $_GET['id_manufacturer'] = $id_manufacturer;
+            return true;
         }
-
-        return $id_manufacturer > 0;
+        return false;
     }
 
     private static function isSupplierLink($short_link, $route)
@@ -547,12 +552,10 @@ class Dispatcher extends DispatcherCore
         $regexp = preg_replace('!\\\.html?\\$#!', '$#', $route['regexp']);
         preg_match($regexp, $short_link, $kw);
 
+        $id_supplier=0;
         if (!empty($kw['id_supplier'])) {
             $id_supplier = $kw['id_supplier'];
-            $_GET['id_supplier'] = $id_supplier;
-            return true;
         }
-
         if (empty($kw['supplier_rewrite'])) {
             if (0 === strpos('/'.$route['rule'], $short_link)) {
                 return true;
@@ -564,15 +567,115 @@ class Dispatcher extends DispatcherCore
             FROM `'._DB_PREFIX_.'supplier` sp
             LEFT JOIN `'._DB_PREFIX_.'supplier_shop` s ON (sp.`id_supplier` = s.`id_supplier`)
             WHERE LOWER(sp.`name`) LIKE \''.pSQL($supplier).'\'';
+
+        if ($id_supplier !== 0) {
+            $sql .= ' AND `sp`.`id_supplier` = ' . $id_supplier;
+        }
+
+
         if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
             $sql .= ' AND s.`id_shop` = '.(int) Shop::getContextShopID();
         }
         $id_supplier = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-
-        if ($id_supplier > 0){
+        if ($id_supplier !== 0){
             $_GET['id_supplier'] = $id_supplier;
+            return true;
+        }
+        return false;
+    }
+
+    public function createUrl(
+        $route_id,
+        $id_lang = null,
+        array $params = [],
+        $force_routes = false,
+        $anchor = '',
+        $id_shop = null
+    ) {
+        if ($id_lang === null) {
+            $id_lang = (int) Context::getContext()->language->id;
+        }
+        if ($id_shop === null) {
+            $id_shop = (int) Context::getContext()->shop->id;
         }
 
-        return $id_supplier > 0;
+        if (!isset($this->routes[$id_shop])) {
+            $this->loadRoutes($id_shop);
+        }
+
+        if (!isset($this->routes[$id_shop][$id_lang][$route_id])) {
+            $query = http_build_query($params, '', '&');
+            $index_link = $this->use_routes ? '' : 'index.php';
+
+            return ($route_id == 'index') ? $index_link . (($query) ? '?' . $query : '') :
+                ((trim($route_id) == '') ? '' : '?controller=' . $route_id) . (($query) ? '&' . $query : '') . $anchor;
+        }
+        $route = $this->routes[$id_shop][$id_lang][$route_id];
+        // Check required fields
+        $query_params = isset($route['params']) ? $route['params'] : [];
+        foreach ($route['keywords'] as $key => $data) {
+            if (!$data['required']) {
+                continue;
+            }
+
+            if (!array_key_exists($key, $params)) {
+                throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "' . $key . '" for route "' . $route_id . '"');
+            }
+            if (isset($this->default_routes[$route_id])) {
+                $query_params[$this->default_routes[$route_id]['keywords'][$key]['param']] = $params[$key];
+            }
+        }
+
+        // Build an url which match a route
+        if ($this->use_routes || $force_routes) {
+            $url = $route['rule'];
+            $add_param = [];
+
+            foreach ($params as $key => $value) {
+                if (!isset($route['keywords'][$key])) {
+                    if (!isset($this->default_routes[$route_id]['keywords'][$key])) {
+                        $add_param[$key] = $value;
+                    }
+                } else {
+                    if ($params[$key]) {
+                        $parameter = $params[$key];
+                        if (is_array($parameter)) {
+                            if (array_key_exists($id_lang, $parameter)) {
+                                $parameter = $parameter[$id_lang];
+                            } else {
+                                // made the choice to return the first element of the array
+                                $parameter = reset($parameter);
+                            }
+                        }
+                        $replace = $route['keywords'][$key]['prepend'] . $parameter . $route['keywords'][$key]['append'];
+                    } else {
+                        $replace = '';
+                    }
+                    $url = preg_replace('#\{([^{}]*:)?' . $key . '(:[^{}]*)?\}#', $replace, $url);
+                }
+            }
+            $url = preg_replace('#\{([^{}]*:)?[a-z0-9_]+?(:[^{}]*)?\}#', '', $url);
+            if (count($add_param)) {
+                $url .= '?' . http_build_query($add_param, '', '&');
+            }
+        } else {
+            // Build a classic url index.php?controller=foo&...
+            $add_params = [];
+            foreach ($params as $key => $value) {
+                if (!isset($route['keywords'][$key]) && !isset($this->default_routes[$route_id]['keywords'][$key])) {
+                    $add_params[$key] = $value;
+                }
+            }
+
+            if (!empty($route['controller'])) {
+                $query_params['controller'] = $route['controller'];
+            }
+            $query = http_build_query(array_merge($add_params, $query_params), '', '&');
+            if ($this->multilang_activated) {
+                $query .= (!empty($query) ? '&' : '') . 'id_lang=' . (int) $id_lang;
+            }
+            $url = 'index.php?' . $query;
+        }
+        return $url . $anchor;
     }
 }
